@@ -20,7 +20,8 @@ const vueEdit = r => require.ensure([], () => r(require('@/page/vueEdit')), 'vue
 const adminSet = r => require.ensure([], () => r(require('@/page/adminSet')), 'adminSet');
 const sendMessage = r => require.ensure([], () => r(require('@/page/sendMessage')), 'sendMessage');
 const explain = r => require.ensure([], () => r(require('@/page/explain')), 'explain');
-
+const charts = r => require.ensure([], () => r(require('@/page/charts')), 'charts');
+const addCamera = r => require.ensure([], () => r(require('@/page/addCamera')), 'addCamera');
 
 
 const routes = [
@@ -92,7 +93,18 @@ const routes = [
             path: '/explain',
             component: explain,
             meta: ['说明', '说明'],
-        }]
+        },
+            {
+                path: '/charts',
+                component: charts,
+                meta: ['图表', '图表'],
+            },
+            {
+                path: '/addCamera',
+                component: addCamera,
+                meta: ['摄像头管理', '查看摄像头'],
+            }
+        ]
     }
 ]
 

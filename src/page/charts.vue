@@ -1,42 +1,84 @@
-<template>
-    <div ref="echarts">
-    </div>
+<!--<template>-->
+<!--    <head-top></head-top>-->
+<!--    <div className="mainContainer">-->
+<!--&lt;!&ndash;        <p>设置全局颜色</p>&ndash;&gt;-->
+<!--&lt;!&ndash;        <div ref="echarts" className="chartContain">&ndash;&gt;-->
+<!--&lt;!&ndash;        </div>&ndash;&gt;-->
+<!--&lt;!&ndash;        <div>&ndash;&gt;-->
+<!--&lt;!&ndash;            <router-link to="/">返回主页</router-link>&ndash;&gt;-->
+<!--&lt;!&ndash;        </div>&ndash;&gt;-->
 
-</template>
+<!--    </div>-->
+<!--</template>-->
 
-<script>
-import echarts from 'echarts'
+<!--<script>-->
+<!--import * as echarts from 'echarts';-->
+<!--import headTop from "../components/headTop";-->
 
-export default {
-    name: "charts",
-    data() {
-        return {
-            chart: null,
-            option:  {
-                title: {
-                    text: 'Biu~简单柱状图示例'
-                },
-                tooltip: {},
-                legend: {
-                    data:['销量']
-                },
-                xAxis: {
-                    data: ["衬衫","羊毛衫","雪纺衫","裤子","高跟鞋","袜子"]
-                },
-                yAxis: {},
-                series: [{
-                    name: '销量',
-                    type: 'bar',
-                    data: [5, 20, 36, 10, 10, 20]
-                }],
-                color: ['#66FF99']
-            }
-        }
+<!--export default {-->
+<!--    data() {-->
+<!--        return {-->
+<!--            chart: null,-->
+<!--            option: {-->
+<!--                title: {-->
+<!--                    text: '自定义柱状图'-->
+<!--                },-->
+<!--                tooltip: {},-->
+<!--                legend: {-->
+<!--                    data: ['销量', '支出', '收入']-->
+<!--                },-->
+<!--                xAxis: {-->
+<!--                    data: ["衬衫", "羊毛衫", "雪纺衫", "裤子", "高跟鞋", "袜子"]-->
+<!--                },-->
+<!--                yAxis: {},-->
+<!--                series: [{-->
+<!--                    name: '销量',-->
+<!--                    type: 'bar',-->
+<!--                    data: [30, 20, 36, 40, 50, 60],-->
 
-    }
+<!--                },-->
+<!--                    {-->
+<!--                        name: '支出',-->
+<!--                        type: 'bar',-->
+<!--                        data: [200, 310, 120, 320, 200, 100],-->
 
-</script>
+<!--                    },-->
+<!--                    {-->
+<!--                        name: '收入',-->
+<!--                        type: 'bar',-->
+<!--                        data: [100, 200, 600, 300, 400, 800],-->
 
-<style scoped>
+<!--                    }-->
+<!--                ],-->
+<!--                color: ['#66FF99', '#FFFF00', '#FF00FF'],-->
+<!--            }-->
+<!--        }-->
+<!--    },-->
+<!--    mounted() {-->
+<!--        this.getPage();-->
+<!--    },-->
+<!--    components: {-->
+<!--        headTop,-->
+<!--    },-->
+<!--    methods: {-->
+<!--        getPage() {-->
+<!--            this.chart = echarts.init(this.$refs.echarts);-->
+<!--            // 使用指定的配置项和数据展示图表-->
+<!--            this.chart.setOption(this.option);-->
+<!--        }-->
+<!--    }-->
+<!--}-->
+<!--</script>-->
 
-</style>
+<!--<style scoped>-->
+<!--.mainContainer {-->
+<!--    width: 600px;-->
+<!--    height: 400px;-->
+<!--    margin: 0 auto;-->
+<!--}-->
+
+<!--.chartContain {-->
+<!--    width: 100%;-->
+<!--    height: 100%;-->
+<!--}-->
+<!--</style>-->
