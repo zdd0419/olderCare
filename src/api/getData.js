@@ -1,10 +1,11 @@
 import fetch from '@/config/fetch'
+import {log} from "nightwatch/lib/util/logger";
 
 /**
  * 登陆
  */
 
-export const login = data => fetch('/admin/login', data, 'POST');
+export const login = data => fetch('http://39.105.102.68:8000/oldcare/login/', data, 'POST',);
 
 /**
  * 退出

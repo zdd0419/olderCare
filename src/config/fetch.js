@@ -1,5 +1,5 @@
 import { baseUrl } from './env'
-
+// 请求返回状态码
 export default async(url = '', data = {}, type = 'GET', method = 'fetch') => {
 	type = type.toUpperCase();
 	url = baseUrl + url;
@@ -22,8 +22,9 @@ export default async(url = '', data = {}, type = 'GET', method = 'fetch') => {
 			method: type,
 			headers: {
 				'Accept': 'application/json',
-				'Content-Type': 'application/json'
-			},
+				'Content-Type': 'application/json',
+                'Authorization': window.sessionStorage.getItem('jwToken')
+            },
 			mode: "cors",
 			cache: "force-cache"
 		}
@@ -33,10 +34,10 @@ export default async(url = '', data = {}, type = 'GET', method = 'fetch') => {
 				value: JSON.stringify(data)
 			})
 		}
-		
+
 		try {
 			const response = await fetch(url, requestConfig);
-			const responseJson = await response.json();
+			const responseJson = await response;
 			return responseJson
 		} catch (error) {
 			throw new Error(error)
