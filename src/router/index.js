@@ -22,7 +22,8 @@ const sendMessage = r => require.ensure([], () => r(require('@/page/sendMessage'
 const explain = r => require.ensure([], () => r(require('@/page/explain')), 'explain');
 const charts = r => require.ensure([], () => r(require('@/page/charts')), 'charts');
 const addCamera = r => require.ensure([], () => r(require('@/page/addCamera')), 'addCamera');
-
+const workerEcharts = r => require.ensure([], () => r(require('@/page/workerEcharts')), 'workerEcharts');
+const volunteerEcharts = r => require.ensure([], () => r(require('@/page/volunteerEcharts')), 'volunteerEcharts');
 
 const routes = [
     {
@@ -103,6 +104,16 @@ const routes = [
                 path: '/addCamera',
                 component: addCamera,
                 meta: ['摄像头管理', '查看摄像头'],
+            },
+            {
+                path: '/volunteerEcharts',
+                component: volunteerEcharts,
+                meta: ['图表数据', '义工数据'],
+            },
+            {
+                path: '/workerEcharts',
+                component: workerEcharts,
+                meta: ['图表数据', '义工数据'],
             }
         ]
     }

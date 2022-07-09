@@ -11,7 +11,7 @@ import axios from "axios";
 export default {
     // name: "app",
     data(){
-    old:[]
+        old:[]
     },
 
     methods: {
@@ -32,7 +32,7 @@ export default {
             // 指定图表的配置项和数据
             let option = {
                 title: {
-                    text: "老人年龄分布"
+                    text: "工作人员年龄分布"
                 },
                 tooltip: {},
                 legend: {
@@ -47,7 +47,7 @@ export default {
                         name: "销量",
                         type: "bar",
                         data:this.old,
-                            // [5, 20, 36, 10]
+                        // [5, 20, 36, 10]
                     }
                 ]
             };

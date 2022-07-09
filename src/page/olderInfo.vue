@@ -54,7 +54,8 @@
                         <el-button
                             size="mini"
                             type="Success"
-                            @click="addFood(scope.$index, scope.row)">采集人脸信息</el-button>
+                            @click="addFace(scope.$index, scope.row)">采集人脸信息</el-button>
+
                         <el-button
                             size="mini"
                             type="Success"
@@ -339,6 +340,32 @@
                 </div>
             </el-dialog>
 
+            <!--            采集人脸信息-->
+            <el-dialog title="采集人脸信息" v-model="dialogFormVisible4"  :model="selectTable4">
+                <div slot="footer" class="dialog-footer">
+                    <el-button type="primary" size="medium"  @click="addOlder">确定</el-button>
+                    <el-button size="medium" @click="dialogFormVisible4 = false" >返回</el-button>
+                </div>
+                <div class="camera_outer">
+                    <video id="videoCamera" :width="videoWidth" :height="videoHeight" autoplay></video>
+                    <canvas style="display:none;" id="canvasCamera" :width="videoWidth" :height="videoHeight"></canvas>
+                    <div class="left">
+                        <div v-if="imgSrc" class="img_bg_camera">
+                            <p>效果预览</p>
+                            <img
+                                :src="this.imgSrc" alt class="tx_img"
+
+                            />
+                        </div>
+                        <div class="button">
+                            <el-button @click="getCompetence()">打开摄像头</el-button>
+                            <el-button @click="stopNavigator()">关闭摄像头</el-button>
+                            <el-button @click="setImage()">拍照</el-button>
+                        </div>
+                    </div>
+                </div>
+            </el-dialog>
+
         </div>
 
     </div>
@@ -373,19 +400,7 @@ export default {
             offset: 0,
             limit: 20,
             count: 0,
-            tableData: [
-                // {
-                //     username:"",
-                //     gender:"",
-                //     birthday:"",
-                //     id_card:"",
-                //     phone:"",
-                //     firstguardian_name:"",
-                //     secondguardian_name:"",
-                //     image_path:"",
-                // }
-
-            ],
+            tableData: [],
             pickerOptions0: {
                 disabledDate(time) {
                     return time.getTime() < Date.now() - 8.64e7;//如果没有后面的-8.64e7就是不可以选择今天的
@@ -402,25 +417,207 @@ export default {
             selectTable: {},
             selectTable2: {},
             selectTable3:{},
+            selectTable4:{},
             dialogFormVisible: false,
             dialogFormVisible2: false,
             dialogFormVisible3:false,
+            dialogFormVisible4:false,
             categoryOptions: [],
             selectedCategory: [],
             address: {},
             radio: '1',
+            start:1,
+            end:1,
+            interval:3,
+            countTimes:1,
+            imgSrc:"",
+            thumbnails:[
+                1,
+                2,
+                3,
+                4,
+                5,
+                6
+            ]
             // flvPlayer:null
         }
     },
     created(){
         this.initData();
-        console.log(11111)
+        console.log(11111);
+        this.webSocketInit();
     },
     components: {
         headTop,
     },
     methods: {
-         initData(){
+        //连接websocket
+        webSocketInit(){
+            const webSocketUrl = 'ws://39.105.102.68:8000/ws/chat/'
+            this.webSocketObject = new WebSocket(webSocketUrl);
+            this.webSocketObject.onopen = this.webSocketOnOpen
+            this.webSocketObject.onmessage = this.webSocketOnMessage
+            this.webSocketObject.onerror = this.webSocketOnError
+            this.webSocketObject.onclose = this.webSocketOnClose
+        },
+        webSocketOnOpen(e){
+            console.log('与服务端连接打开->',e);
+        },
+        webSocketOnMessage(e){
+            var _this = this;
+            _this.dataJson = JSON.parse(e.data).data
+            console.log('来自服务端的消息->',_this.dataJson)
+            console.log('来自服务端的消息->',e)
+        },
+        webSocketOnError(e){
+            console.log('与服务端连接异常->',e)
+        },
+        webSocketOnClose(e){
+            console.log('与服务端连接关闭->',e)
+        },
+        websocketsend(Data){//数据发送
+            this.webSocketObject.send(Data);
+        },
+       //跳帧
+        canplayHandler(){
+            var _this = this;
+            _this.start=_this.start+_this.interval;
+            // _this.thisVideo.currentTime=_this.start;
+            // console.log( _this.thisVideo.currentTime)
+        },
+        // 调用权限（打开摄像头功能）
+        getCompetence() {
+            var _this = this;
+            _this.thisCancas = document.getElementById("canvasCamera");
+            _this.thisContext = this.thisCancas.getContext("2d");
+            _this.thisVideo = document.getElementById("videoCamera");
+            _this.thisVideo.style.display = 'block';
+            // _this.start= _this.thisVideo.currentTime;
+            _this.thisVideo.addEventListener('canplay',this.canplayHandler);
+            // const end = _this.thisVideo.buffered.end(0);  // 视频结尾时间
+            const current =  _this.thisVideo.currentTime;  //  视频当前时间
+            // const diff = end - current;// 相差时间
+            // console.log(diff);
+
+
+            // _this.end=_this.thisVideo.endTime;
+            // 获取媒体属性，旧版本浏览器可能不支持mediaDevices，我们首先设置一个空对象
+            if (navigator.mediaDevices === undefined) {
+                navigator.mediaDevices = {};
+            }
+            // 一些浏览器实现了部分mediaDevices，我们不能只分配一个对象
+            // 使用getUserMedia，因为它会覆盖现有的属性。
+            // 这里，如果缺少getUserMedia属性，就添加它。
+            if (navigator.mediaDevices.getUserMedia === undefined) {
+                navigator.mediaDevices.getUserMedia = function(constraints) {
+                    // 首先获取现存的getUserMedia(如果存在)
+                    var getUserMedia =
+                        navigator.webkitGetUserMedia ||
+                        navigator.mozGetUserMedia ||
+                        navigator.getUserMedia;
+                    // 有些浏览器不支持，会返回错误信息
+                    // 保持接口一致
+                    if (!getUserMedia) {//不存在则报错
+                        return Promise.reject(
+                            new Error("getUserMedia is not implemented in this browser")
+                        );
+                    }
+                    // 否则，使用Promise将调用包装到旧的navigator.getUserMedia
+                    return new Promise(function(resolve, reject) {
+                        getUserMedia.call(navigator, constraints, resolve, reject);
+                    });
+                };
+            }
+            var constraints = {
+                audio: false,
+                video: {
+                    width: this.videoWidth,
+                    height: this.videoHeight,
+                    transform: "scaleX(-1)"
+                }
+            };
+            navigator.mediaDevices
+                .getUserMedia(constraints)
+                .then(function(stream) {
+                    // 旧的浏览器可能没有srcObject
+                    if ("srcObject" in _this.thisVideo) {
+                        _this.thisVideo.srcObject = stream;
+                    } else {
+                        // 避免在新的浏览器中使用它，因为它正在被弃用。
+                        _this.thisVideo.src = window.URL.createObjectURL(stream);
+                    }
+                    _this.thisVideo.onloadedmetadata = function(e) {
+                        _this.thisVideo.play();
+                    };
+                })
+                .catch(err => {
+                    console.log(err);
+                });
+            // _this.thumbnails.forEach(item=>{
+            //     _this.setImage()
+            //     console.log(333)
+            // })
+            // let diffCritical = 4; // 这里设定了超过4秒以上就进行跳转
+            // let diffSpeedUp = 1; // 这里设置了超过1秒以上则进行视频加速播放
+            // if(diffCritical<diffSpeedUp){
+            //     diffSpeedUp=diffSpeedUp+1;
+            //     console.log(111111111111111111111)
+            // }else{
+            //     _this.setImage();
+            //     diffCritical=diffCritical+4;
+            //     console.log(2222222222222222222222222222)
+            // }
+
+
+
+        },
+        //  绘制图片（拍照功能）
+        setImage() {
+            var _this = this;
+            // canvas画图
+            _this.thisContext.drawImage(
+                _this.thisVideo,
+                0,
+                0,
+                _this.videoWidth,
+                _this.videoHeight
+            );
+            // 获取图片base64链接
+            const image = this.thisCancas.toDataURL("image/png");
+            _this.imgSrc = image;//赋值并预览图片
+            // _this.thumbnails.push({
+            //     currentTime:_this.start,
+            //     blob: _this.imgSrc
+            // });
+            console.log(_this.imgSrc)
+            // console.log(_this.thumbnails)
+            this.websocketsend(JSON.stringify({'message':_this.imgSrc}));
+            // //这里可以把转换的URL存到数
+            // 组里面
+            // _this.img.push(_this.imgSrc);
+            // _this.img.reverse();//将数组倒序
+
+
+            // _this.setImage()
+        },
+        // 关闭摄像头
+        stopNavigator() {
+            this.thisVideo.srcObject.getTracks()[0].stop();
+        },
+        // base64转文件，此处没用到
+        dataURLtoFile(dataurl, filename) {
+            var arr = dataurl.split(",");
+            var mime = arr[0].match(/:(.*?);/)[1];
+            var bstr = atob(arr[1]);
+            var n = bstr.length;
+            var u8arr = new Uint8Array(n);
+            while (n--) {
+                u8arr[n] = bstr.charCodeAt(n);
+            }
+            return new File([u8arr], filename, { type: mime });
+        },
+
+        initData(){
             axios.get('http://39.105.102.68:8000/oldcare/oldperson/', {headers: {
                     'Authorization':'Bearer '+window.localStorage.getItem('jwToken')
                 }
@@ -482,6 +679,10 @@ export default {
             this.currentPage = val;
             this.offset = (val - 1)*this.limit;
             this.getResturants()
+        },
+        addFace(index,row){
+            this.selectTable4=row;
+            this.dialogFormVisible4=true;
         },
 
         //添加老人信息
@@ -604,25 +805,7 @@ export default {
                 console.log('更新', err);
             })
 
-            // try{
-            //
-            //     const res = await deleteResturant(row.id);
-            //     if (res.status == 1) {
-            //         this.$message({
-            //             type: 'success',
-            //             message: '删除成功'
-            //         });
-            //         this.tableData.splice(index, 1);
-            //     }else{
-            //         throw new Error(res.message)
-            //     }
-            // }catch(err){
-            //     this.$message({
-            //         type: 'error',
-            //         message: err.message
-            //     });
-            //     console.log('删除失败')
-            // }
+
         },
     },
 }

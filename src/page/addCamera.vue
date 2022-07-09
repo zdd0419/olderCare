@@ -117,51 +117,7 @@
 
 <!--<style lang="less">-->
 <!--@import '../style/mixin';-->
-<!--.button_submit{-->
-<!--    text-align: center;-->
-<!--}-->
-<!--.avatar-uploader .el-upload {-->
-<!--    border: 1px dashed #d9d9d9;-->
-<!--    border-radius: 6px;-->
-<!--    cursor: pointer;-->
-<!--    position: relative;-->
-<!--    overflow: hidden;-->
-<!--}-->
-<!--.avatar-uploader .el-upload:hover {-->
-<!--    border-color: #20a0ff;-->
-<!--}-->
-<!--.avatar-uploader-icon {-->
-<!--    font-size: 28px;-->
-<!--    color: #8c939d;-->
-<!--    width: 120px;-->
-<!--    height: 120px;-->
-<!--    line-height: 120px;-->
-<!--    text-align: center;-->
-<!--}-->
-<!--.avatar {-->
-<!--    width: 120px;-->
-<!--    height: 120px;-->
-<!--    display: block;-->
-<!--}-->
-<!--.el-table .info-row {-->
-<!--    background: #c9e5f5;-->
-<!--}-->
 
-<!--.el-table .positive-row {-->
-<!--    background: #e2f0e4;-->
-<!--}-->
-
-<!--.right {-->
-<!--    height: 100%;-->
-<!--    width: 40%;-->
-<!--    float: left;-->
-<!--}-->
-<!--.left {-->
-<!--    width: 60%;-->
-<!--    height: 100%;-->
-<!--    float: left;-->
-<!--    //background-color: blue;-->
-<!--}-->
 <!--</style>-->
 
 
@@ -169,14 +125,16 @@
     <div class="camera_outer">
         <video id="videoCamera" :width="videoWidth" :height="videoHeight" autoplay></video>
         <canvas style="display:none;" id="canvasCamera" :width="videoWidth" :height="videoHeight"></canvas>
-        <div v-if="imgSrc" class="img_bg_camera">
-            <p>效果预览</p>
-            <img :src="imgSrc" alt class="tx_img" />
-        </div>
-        <div class="button">
-            <el-button @click="getCompetence()">打开摄像头</el-button>
-            <el-button @click="stopNavigator()">关闭摄像头</el-button>
-            <el-button @click="setImage()">拍照</el-button>
+        <div class="left">
+            <div v-if="imgSrc" class="img_bg_camera">
+                <p>效果预览</p>
+                <img :src="imgSrc" alt class="tx_img" />
+            </div>
+            <div class="button">
+                <el-button @click="getCompetence()">打开摄像头</el-button>
+                <el-button @click="stopNavigator()">关闭摄像头</el-button>
+                <el-button @click="setImage()">拍照</el-button>
+            </div>
         </div>
     </div>
 </template>
@@ -185,19 +143,51 @@ export default {
     name:"Xiu",
     data() {
         return {
-            videoWidth: 250,
-            videoHeight: 350,
+            videoWidth: 550,
+            videoHeight: 550,
             imgSrc: "",
             thisCancas: null,
             thisContext: null,
             thisVideo: null,
-            openVideo:false
+            openVideo:false,
+            img:[],
+            webSocketObject: null,
+            dataJason:[]
         };
     },
     mounted(){
-        //this.getCompetence()//进入页面就调用摄像头
+        // this.getCompetence()//进入页面就调用摄像头
+        this.webSocketInit()
+
     },
     methods: {
+//连接websocket
+        webSocketInit(){
+            const webSocketUrl = 'ws://39.105.102.68:8000/ws/chat/'
+            this.webSocketObject = new WebSocket(webSocketUrl);
+            this.webSocketObject.onopen = this.webSocketOnOpen
+            this.webSocketObject.onmessage = this.webSocketOnMessage
+            this.webSocketObject.onerror = this.webSocketOnError
+            this.webSocketObject.onclose = this.webSocketOnClose
+        },
+        webSocketOnOpen(e){
+            console.log('与服务端连接打开->',e);
+        },
+        webSocketOnMessage(e){
+            var _this = this;
+            _this.dataJson = JSON.parse(e.data).data
+            console.log('来自服务端的消息->',_this.dataJson)
+            console.log('来自服务端的消息->',e)
+        },
+        webSocketOnError(e){
+            console.log('与服务端连接异常->',e)
+        },
+        webSocketOnClose(e){
+            console.log('与服务端连接关闭->',e)
+        },
+        websocketsend(Data){//数据发送
+            this.webSocketObject.send(Data);
+        },
         // 调用权限（打开摄像头功能）
         getCompetence() {
             var _this = this;
@@ -272,6 +262,12 @@ export default {
             // 获取图片base64链接
             var image = this.thisCancas.toDataURL("image/png");
             _this.imgSrc = image;//赋值并预览图片
+            console.log(_this.imgSrc)
+            this.websocketsend(JSON.stringify({'message':_this.imgSrc}));
+            //这里可以把转换的URL存到数组里面
+            _this.img.push(_this.imgSrc);
+            _this.img.reverse();//将数组倒序
+
         },
         // 关闭摄像头
         stopNavigator() {
@@ -293,6 +289,53 @@ export default {
 };
 </script>
 <style  scoped>
+.button_submit{
+    text-align: center;
+}
+.avatar-uploader .el-upload {
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+.avatar-uploader .el-upload:hover {
+    border-color: #20a0ff;
+}
+.avatar-uploader-icon {
+    font-size: 28px;
+    color: #8c939d;
+    width: 120px;
+    height: 120px;
+    line-height: 120px;
+    text-align: center;
+}
+.avatar {
+    width: 120px;
+    height: 120px;
+    display: block;
+}
+.el-table .info-row {
+    background: #c9e5f5;
+}
 
+.el-table .positive-row {
+    background: #e2f0e4;
+}
+
+.right {
+    height: 100%;
+    width: 40%;
+    float: left;
+}
+.left {
+    width: 60%;
+    height: 100%;
+    float: left;
+//background-color: blue;
+}
 </style>
+
+
+
 

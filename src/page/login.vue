@@ -3,7 +3,7 @@
         <transition name="form-fade" mode="in-out">
             <section class="form_contianer" v-show="showLogin">
                 <div class="manage_tip">
-                    <p>养老系统</p>
+                    <p class="headline">欢迎使用智慧养老系统！</p>
                 </div>
                 <el-form :model="loginForm" :rules="rules" ref="loginForm">
                     <el-form-item prop="username">
@@ -17,8 +17,9 @@
                     </el-form-item>
                 </el-form>
                 <p class="tip">温馨提示：</p>
-                <p class="tip">未登录过的新用户，自动注册</p>
-                <p class="tip">注册过的用户可凭账号密码登录</p>
+                <!-- <br> -->
+                <p class="tip">&nbsp;&nbsp;&nbsp;&nbsp;1.未登录过的新用户，自动注册</p>
+                <p class="tip">&nbsp;&nbsp;&nbsp;&nbsp;2.注册过的用户可凭账号密码登录</p>
             </section>
         </transition>
     </div>
@@ -76,41 +77,13 @@ export default {
 
                         // if(response.data.status==1){
                             localStorage.setItem('jwToken', response.data.access)
-                            _this.$router.push('manage')
-                        // }
+                            _this.$router.push('manage')                    // }
 
 
                     }).catch(function (error) {
                         console.log(error);
 
                     });
-
-
-
-                //     if (res.status == 200) {
-                //         // this.$store.commit("changeLogin", res.headers["x-auth-token"]);
-                //         var json=res.json();
-                //         json.then((result)=>{
-                //             console.log("result",result)
-                //         })
-                //         this.$message({
-                //             type: 'success',
-                //             message: '登录成功'
-                //         });
-                //         this.$router.push('manage')
-                //     }else{
-                //         this.$message({
-                //             type: 'error',
-                //             message: res.message
-                //         });
-                //     }
-                // } else {
-                //     this.$notify.error({
-                //         title: '错误',
-                //         message: '请输入正确的用户名密码',
-                //         offset: 100
-                //     });
-                //     return false;
                 }
             });
         },
@@ -131,8 +104,22 @@ export default {
 
 <style lang="less" scoped>
 @import '../style/mixin';
-.login_page{
-    background-color: #324057;
+// .login_page{
+//     background-color: #324057;
+// }
+.login_page {
+    width: 100%;
+    height: 100%;
+    min-width: 1000px;
+    background-color: #f4a80f;
+    background-image: url("../assets/img/login_bg.jpg");
+    background-size: 100% 100%;
+    background-position: center center;
+    overflow: auto;
+    background-repeat: no-repeat;
+    position: fixed;
+    line-height: 100%;
+    padding-top: 150px;
 }
 .manage_tip{
     position: absolute;
@@ -140,14 +127,15 @@ export default {
     top: -100px;
     left: 0;
     p{
-        font-size: 34px;
-        color: #fff;
+        font-size: 35px;
+        color: rgba(0, 0, 0, 0.745);
     }
 }
 .form_contianer{
-    .wh(320px, 210px);
+    .wh(340px, 210px);
     .ctp(320px, 210px);
-    padding: 25px;
+    top: 340px;
+    padding: 35px;
     border-radius: 5px;
     text-align: center;
     background-color: #fff;
@@ -157,8 +145,9 @@ export default {
     }
 }
 .tip{
-    font-size: 12px;
-    color: red;
+    font-size: 13px;
+    color: rgb(203, 29, 29);
+    text-align:left;
 }
 .form-fade-enter-active, .form-fade-leave-active {
     transition: all 1s;
@@ -167,4 +156,8 @@ export default {
     transform: translate3d(0, -50px, 0);
     opacity: 0;
 }
+// .headline{
+//     font-size: 22px;
+//     color: rgba(0, 0, 0, 0.745);
+// }
 </style>

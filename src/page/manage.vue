@@ -13,13 +13,13 @@
                     <el-submenu index="3">
                         <template slot="title"><i class="el-icon-plus"></i>摄像头管理</template>
                         <el-menu-item index="addCamera">摄像头</el-menu-item>
-                        <el-menu-item index="addGoods">添加商品</el-menu-item>
+<!--                        <el-menu-item index="addGoods">添加商品</el-menu-item>-->
                     </el-submenu>
                     <el-submenu index="4">
                         <template slot="title"><i class="el-icon-star-on"></i>数据图表</template>
                         <el-menu-item index="charts">老人信息统计</el-menu-item>
-                        <el-menu-item index="visitor">工作人员信息统计</el-menu-item>
-                        <el-menu-item index="visitor">义工信息统计</el-menu-item>
+                        <el-menu-item index="workerEcharts">工作人员信息统计</el-menu-item>
+                        <el-menu-item index="volunteerEcharts">义工信息统计</el-menu-item>
                         <!-- <el-menu-item index="newMember">用户数据</el-menu-item> -->
                     </el-submenu>
                     <el-submenu index="5">
