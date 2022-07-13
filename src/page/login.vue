@@ -26,9 +26,9 @@
 </template>
 
 <script>
-import {login, getAdminInfo} from '@/api/getData'
+
 import {mapActions, mapState} from 'vuex'
-import {log} from "nightwatch/lib/util/logger";
+
 import axios from "axios";
 
 export default {
@@ -112,7 +112,7 @@ export default {
     height: 100%;
     min-width: 1000px;
     background-color: #f4a80f;
-    background-image: url("../assets/img/login_bg.jpg");
+    background-image: url("../assets/img/login2.jpg");
     background-size: 100% 100%;
     background-position: center center;
     overflow: auto;
@@ -156,8 +156,5 @@ export default {
     transform: translate3d(0, -50px, 0);
     opacity: 0;
 }
-// .headline{
-//     font-size: 22px;
-//     color: rgba(0, 0, 0, 0.745);
-// }
+
 </style>

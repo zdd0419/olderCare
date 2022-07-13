@@ -12,30 +12,27 @@
                     </el-submenu>
                     <el-submenu index="3">
                         <template slot="title"><i class="el-icon-plus"></i>摄像头管理</template>
-                        <el-menu-item index="addCamera">摄像头</el-menu-item>
+                        <el-menu-item index="addCamera">陌生人追踪和情绪识别摄像头</el-menu-item>
+                        <el-menu-item index="interectDetect">交互检测摄像头</el-menu-item>
+                        <el-menu-item index="invade">入侵检测摄像头</el-menu-item>
+                        <el-menu-item index="shuaidaoDetect">摔倒检测摄像头</el-menu-item>
+                        <el-menu-item index="history">历史检测记录</el-menu-item>
 <!--                        <el-menu-item index="addGoods">添加商品</el-menu-item>-->
                     </el-submenu>
                     <el-submenu index="4">
                         <template slot="title"><i class="el-icon-star-on"></i>数据图表</template>
-                        <el-menu-item index="charts">老人信息统计</el-menu-item>
-                        <el-menu-item index="workerEcharts">工作人员信息统计</el-menu-item>
-                        <el-menu-item index="volunteerEcharts">义工信息统计</el-menu-item>
+                        <el-menu-item index="charts">数据信息统计图表</el-menu-item>
+<!--                        <el-menu-item index="workerEcharts">工作人员信息统计</el-menu-item>-->
+<!--                        <el-menu-item index="volunteerEcharts">义工信息统计</el-menu-item>-->
                         <!-- <el-menu-item index="newMember">用户数据</el-menu-item> -->
                     </el-submenu>
-                    <el-submenu index="5">
-                        <template slot="title"><i class="el-icon-edit"></i>编辑</template>
-                        <!-- <el-menu-item index="uploadImg">上传图片</el-menu-item> -->
-                        <el-menu-item index="vueEdit">文本编辑</el-menu-item>
-                    </el-submenu>
-                    <el-submenu index="6">
-                        <template slot="title"><i class="el-icon-setting"></i>设置</template>
-                        <el-menu-item index="adminSet">管理员设置</el-menu-item>
-                        <!-- <el-menu-item index="sendMessage">发送通知</el-menu-item> -->
-                    </el-submenu>
-                    <el-submenu index="7">
-                        <template slot="title"><i class="el-icon-warning"></i>说明</template>
-                        <el-menu-item index="explain">说明</el-menu-item>
-                    </el-submenu>
+
+<!--                    <el-submenu index="5">-->
+<!--                        <template slot="title"><i class="el-icon-setting"></i>设置</template>-->
+<!--                        <el-menu-item index="adminSet">管理员设置</el-menu-item>-->
+<!--                        &lt;!&ndash; <el-menu-item index="sendMessage">发送通知</el-menu-item> &ndash;&gt;-->
+<!--                    </el-submenu>-->
+
                 </el-menu>
             </el-col>
             <el-col :span="20" style="height: 100%;overflow: auto;">

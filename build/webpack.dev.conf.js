@@ -6,6 +6,7 @@ var baseWebpackConfig = require('./webpack.base.conf')
 var HtmlWebpackPlugin = require('html-webpack-plugin')
 var FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin')
 
+
 // add hot-reload related code to entry chunks
 Object.keys(baseWebpackConfig.entry).forEach(function (name) {
   baseWebpackConfig.entry[name] = ['./build/dev-client'].concat(baseWebpackConfig.entry[name])
@@ -15,6 +16,21 @@ module.exports = merge(baseWebpackConfig, {
   module: {
     rules: utils.styleLoaders({ sourceMap: config.dev.cssSourceMap })
   },
+
+
+    node: {
+
+        // prevent webpack from injecting useless setImmediate polyfill because Vue
+        // source contains it (although only uses it if it's native).
+        setImmediate: false,
+        // prevent webpack from injecting mocks to Node native modules
+        // that does not make sense for the client
+        dgram:'empty',
+        fs: 'empty',
+        net: 'empty',
+        tls: 'empty',
+        child_process: 'empty'
+    },
   // cheap-module-eval-source-map is faster for development
   devtool: '#cheap-module-eval-source-map',
   plugins: [
@@ -33,3 +49,6 @@ module.exports = merge(baseWebpackConfig, {
     new FriendlyErrorsPlugin()
   ]
 })
+
+
+

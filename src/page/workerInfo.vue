@@ -1,7 +1,9 @@
 <template>
     <div class="fillcontain">
         <head-top></head-top>
-        <el-button type="primary" margin-left="30px" width="30%"  @click="dialogFormVisible3 = true">添加员工</el-button>
+        <div class="button">
+            <el-button type="primary" margin-left="30px" width="30%"  @click="dialogFormVisible3 = true">添加员工</el-button>
+        </div>
         <div class="table_container">
             <el-table
                 :data="tableData"
@@ -80,16 +82,12 @@
                         <el-radio v-model="radio" label="1">男</el-radio>
                         <el-radio v-model="radio" label="2">女</el-radio>
                     </el-form-item>
-                    <el-form-item label="联系电话" label-width="100px">
+                    <el-form-item label="联系电话" label-width="120px">
                         <el-input v-model="selectTable.phone"></el-input>
                     </el-form-item>
-                    <el-form-item label="身份证号" label-width="100px">
+                    <el-form-item label="身份证号" label-width="120px">
                         <el-input v-model="selectTable.id_card"></el-input>
                     </el-form-item>
-                    <el-form-item label="删除标志：">
-                        <el-input v-model="selectTable.REMOVE" auto-complete="off"></el-input>
-                    </el-form-item>
-
                 </el-form>
                 <div slot="footer" class="dialog-footer">
                     <el-button @click="dialogFormVisible = false">取 消</el-button>
@@ -223,10 +221,11 @@
                 </div>
             </el-dialog>
             <!--            采集人脸信息-->
-            <el-dialog title="采集人脸信息" v-model="dialogFormVisible4"  :model="selectTable4">
+            <el-dialog title="采集人脸信息" v-model="dialogFormVisible4" :model="selectTable4" >
+
                 <div slot="footer" class="dialog-footer">
-                    <el-button type="primary" size="medium"  @click="addOlder">确定</el-button>
-                    <el-button size="medium" @click="dialogFormVisible4 = false" >返回</el-button>
+                    <el-button type="primary" size="medium"  @click="stopNavigator()">确定</el-button>
+                    <el-button size="medium" @click="dialogFormVisible4 = false,audioplay.pause()"  >返回</el-button>
                 </div>
                 <div class="camera_outer">
                     <video id="videoCamera" :width="videoWidth" :height="videoHeight" autoplay></video>
@@ -236,8 +235,17 @@
                             <p>效果预览</p>
                             <img :src="imgSrc" alt class="tx_img" />
                         </div>
+                        <!-- 告警音 -->
+                        <div class="palyer">
+
+                        </div>
+                        <audio id="audio":src="list[0].audio" ></audio>
+
+                        <!--                            <div @click="maddelListening(item,index)"></div>-->
+                        <!--                        </div>-->
+                        <!--                        <audio id="audio" src="/static/audio/look_left_1.wav"/>-->
                         <div class="button">
-                            <el-button @click="getCompetence()">打开摄像头</el-button>
+                            <el-button type="primary" size="medium" @click="getCompetence()">打开摄像头</el-button>
                             <el-button @click="stopNavigator()">关闭摄像头</el-button>
                             <el-button @click="setImage()">拍照</el-button>
                         </div>
@@ -266,6 +274,11 @@ export default {
         return {
             baseUrl,
             baseImgPath,
+            city:{},
+            offset: 0,
+            limit: 20,
+            count: 0,
+            tableData: [],
             videoWidth: 550,
             videoHeight: 550,
             imgSrc: "",
@@ -276,13 +289,6 @@ export default {
             img:[],
             webSocketObject: null,
             dataJason:[],
-            city:{},
-            offset: 0,
-            limit: 20,
-            count: 0,
-            tableData: [
-
-            ],
             pickerOptions0: {
                 disabledDate(time) {
                     return time.getTime() < Date.now() - 8.64e7;//如果没有后面的-8.64e7就是不可以选择今天的
@@ -293,7 +299,18 @@ export default {
                     return time.getTime() < Date.now() - 8.64e7;//如果没有后面的-8.64e7就是不可以选择今天的
                 }
             },
+            list:[
+                {audio:"/static/audio/all.wav"},
+                {audio:"/static/audio/look_left_1.wav"},
+                {audio:"/static/audio/look_right_1.wav"},
+                {audio:"/static/audio/blink_1.wav"},
+                {audio:"/static/audio/bow_head_1.wav"},
+                {audio:"/static/audio/open_mouth_1.wav"},
+                {audio:"/static/audio/rise_head_1.wav"},
+                {audio:"/static/audio/smile_1.wav"},
+                {audio:"/static/audio/end_capturing_1.wav"},
 
+            ],
             tableData2: [],
             currentPage: 1,
             selectTable: {},
@@ -304,6 +321,7 @@ export default {
             dialogFormVisible2: false,
             dialogFormVisible3:false,
             dialogFormVisible4:false,
+            audioplay:"",
             categoryOptions: [],
             selectedCategory: [],
             address: {},
@@ -313,7 +331,6 @@ export default {
     },
     created(){
         this.initData();
-        console.log(11111);
         this.webSocketInit();
     },
     components: {
@@ -322,7 +339,7 @@ export default {
     methods: {
         //连接websocket
         webSocketInit(){
-            const webSocketUrl = 'ws://39.105.102.68:8000/ws/chat/'
+            const webSocketUrl = 'ws://39.105.102.68:8000/ws/face_reg/'
             this.webSocketObject = new WebSocket(webSocketUrl);
             this.webSocketObject.onopen = this.webSocketOnOpen
             this.webSocketObject.onmessage = this.webSocketOnMessage
@@ -406,9 +423,46 @@ export default {
                 .catch(err => {
                     console.log(err);
                 });
+            this.aplayAudio()
+            var startTime = new Date().getTime();
+            this.timer=setInterval(()=>{
+                _this.setImage()
+                // this.aplayAudio()
+                if(new Date().getTime() - startTime > 50000){
+                    console.log(90909098888888)
+                    console.log(_this.selectTable4.id)
+                    var message={
+                        base64:_this.img.reverse(),
+                        pid:this.selectTable4.id,
+                        uid:2,
+                        type:"employee"
+                    }
+                    this.websocketsend(JSON.stringify(message));
+
+                    console.log(12345688767)
+                    // console.log(_this.img)
+
+                    clearInterval( this.timer);
+
+                }
+                //获取50张图片
+            },1000)
+
         },
-        //  绘制图片（拍照功能）
-        setImage() {
+
+        // 语音播放
+        aplayAudio () {
+            var _this=this
+            console.log("语音提示------------------------------------")
+            var audios = document.getElementsByTagName("audio");
+            console.log(audios)
+
+            const audio = document.getElementById('audio')
+            _this.audioplay=audio
+            _this.audioplay.play()
+        },
+        //截图
+        async setImage() {
             var _this = this;
             // canvas画图
             _this.thisContext.drawImage(
@@ -418,19 +472,22 @@ export default {
                 _this.videoWidth,
                 _this.videoHeight
             );
+            _this.thisContext.strokeStyle = 'red';
+            _this.thisContext.strokeRect(150, 150, 260, 250);
+
             // 获取图片base64链接
             var image = this.thisCancas.toDataURL("image/png");
             _this.imgSrc = image;//赋值并预览图片
             console.log(_this.imgSrc)
-            this.websocketsend(JSON.stringify({'message':_this.imgSrc}));
-            //这里可以把转换的URL存到数组里面
             _this.img.push(_this.imgSrc);
-            _this.img.reverse();//将数组倒序
 
         },
         // 关闭摄像头
         stopNavigator() {
             this.thisVideo.srcObject.getTracks()[0].stop();
+            this.dialogFormVisible4 = false
+            this.audioplay.pause()
+
         },
         // base64转文件，此处没用到
         dataURLtoFile(dataurl, filename) {
@@ -483,6 +540,12 @@ export default {
                 })
                 const countData=i;
                 this.count=countData;
+                var _this=this
+                if(_this.tableData.gender=="男"){
+                    _this.radio='1';
+                }else{
+                    _this.radio='2'
+                }
                 console.log(response);
                 console.log(response.data)
                 console.log(response.data[0])
@@ -606,25 +669,6 @@ export default {
                 console.log('更新', err);
             })
 
-            // try{
-            //
-            //     const res = await deleteResturant(row.id);
-            //     if (res.status == 1) {
-            //         this.$message({
-            //             type: 'success',
-            //             message: '删除成功'
-            //         });
-            //         this.tableData.splice(index, 1);
-            //     }else{
-            //         throw new Error(res.message)
-            //     }
-            // }catch(err){
-            //     this.$message({
-            //         type: 'error',
-            //         message: err.message
-            //     });
-            //     console.log('删除失败')
-            // }
         },
     },
 }
@@ -645,7 +689,8 @@ export default {
     width: 50%;
 }
 .table_container{
-    padding: 20px;
+    padding-left: 20px;
+    padding-top: 10px;
 }
 .Pagination{
     display: flex;
@@ -674,5 +719,12 @@ export default {
     width: 120px;
     height: 120px;
     display: block;
+}
+
+.button{
+    position: relative;
+    padding-left: 20px;
+    padding-top: 10px;
+
 }
 </style>

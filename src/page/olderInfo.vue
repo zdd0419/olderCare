@@ -1,7 +1,10 @@
 <template>
     <div class="fillcontain">
         <head-top></head-top>
-        <el-button type="primary" margin-left="30px" width="30%"  @click="dialogFormVisible3 = true">添加老人</el-button>
+        <div class="button">
+            <el-button type="primary" margin-left="30px" width="30%"  @click="dialogFormVisible3 = true">添加老人</el-button>
+        </div>
+
         <div class="table_container">
             <el-table
                 :data="tableData"
@@ -80,12 +83,12 @@
             <!--            修改信息-->
             <el-dialog title="修改信息" v-model="dialogFormVisible" :model="selectTable">
                 <el-form >
-                    <el-form-item label="姓名" label-width="100px">
+                    <el-form-item label="姓名" label-width="70px" style="padding: 0">
                         <el-input v-model="selectTable.username" auto-complete="off"></el-input>
                     </el-form-item>
-                    <el-form-item label="性别" label-width="100px">
-                        <el-radio v-model="radio" label="1">男</el-radio>
-                        <el-radio v-model="radio" label="2">女</el-radio>
+                    <el-form-item label="性别" label-width="70px">
+                        <el-radio  v-model="radio" label="1">男</el-radio>
+                        <el-radio  v-model="radio" label="2">女</el-radio>
                     </el-form-item>
                     <el-form-item label="联系电话" label-width="100px">
                         <el-input v-model="selectTable.phone"></el-input>
@@ -93,28 +96,28 @@
                     <el-form-item label="身份证号" label-width="100px">
                         <el-input v-model="selectTable.id_card"></el-input>
                     </el-form-item>
-                    <el-form-item label="第一监护人姓名：">
+                    <el-form-item label="第一监护人姓名：" label-width="150px">
                         <el-input v-model="selectTable.firstguardian_name"></el-input>
                     </el-form-item>
-                    <el-form-item label="与第一监护人关系：">
+                    <el-form-item label="与第一监护人关系：" label-width="160px">
                         <el-input v-model="selectTable.firstguardian_relationship"></el-input>
                     </el-form-item>
-                    <el-form-item label="第一监护人电话：">
+                    <el-form-item label="第一监护人电话：" label-width="150px">
                         <el-input v-model="selectTable.firstguardian_phone"></el-input>
                     </el-form-item>
-                    <el-form-item label="第一监护人微信：">
+                    <el-form-item label="第一监护人微信：" label-width="150px">
                         <el-input v-model="selectTable.firstguardian_wechat"></el-input>
                     </el-form-item>
-                    <el-form-item label="第二监护人姓名：">
+                    <el-form-item label="第二监护人姓名：" label-width="150px">
                         <el-input v-model="selectTable.secondguardian_name"></el-input>
                     </el-form-item>
-                    <el-form-item label="与第二监护人关系：">
+                    <el-form-item label="与第二监护人关系：" label-width="160px">
                         <el-input v-model="selectTable.secondguardian_relationship"></el-input>
                     </el-form-item>
-                    <el-form-item label="第二监护人电话：">
+                    <el-form-item label="第二监护人电话：" label-width="150px">
                         <el-input v-model="selectTable.secondguardian_phone"></el-input>
                     </el-form-item>
-                    <el-form-item label="第二监护人微信：">
+                    <el-form-item label="第二监护人微信：" label-width="150px">
                         <el-input v-model="selectTable.secondguardian_wechat"></el-input>
                     </el-form-item>
                     <el-form-item label="上传头像" label-width="100px">
@@ -341,10 +344,11 @@
             </el-dialog>
 
             <!--            采集人脸信息-->
-            <el-dialog title="采集人脸信息" v-model="dialogFormVisible4"  :model="selectTable4">
+            <el-dialog title="采集人脸信息" v-model="dialogFormVisible4" :model="selectTable4" >
+
                 <div slot="footer" class="dialog-footer">
-                    <el-button type="primary" size="medium"  @click="addOlder">确定</el-button>
-                    <el-button size="medium" @click="dialogFormVisible4 = false" >返回</el-button>
+                    <el-button type="primary" size="medium"  @click="stopNavigator()">确定</el-button>
+                    <el-button size="medium" @click="dialogFormVisible4 = false,audioplay.pause()"  >返回</el-button>
                 </div>
                 <div class="camera_outer">
                     <video id="videoCamera" :width="videoWidth" :height="videoHeight" autoplay></video>
@@ -352,13 +356,19 @@
                     <div class="left">
                         <div v-if="imgSrc" class="img_bg_camera">
                             <p>效果预览</p>
-                            <img
-                                :src="this.imgSrc" alt class="tx_img"
-
-                            />
+                            <img :src="imgSrc" alt class="tx_img" />
                         </div>
+                        <!-- 告警音 -->
+                        <div class="palyer">
+
+                        </div>
+                        <audio id="audio":src="list[0].audio" ></audio>
+
+                        <!--                            <div @click="maddelListening(item,index)"></div>-->
+                        <!--                        </div>-->
+                        <!--                        <audio id="audio" src="/static/audio/look_left_1.wav"/>-->
                         <div class="button">
-                            <el-button @click="getCompetence()">打开摄像头</el-button>
+                            <el-button type="primary" size="medium" @click="getCompetence()">打开摄像头</el-button>
                             <el-button @click="stopNavigator()">关闭摄像头</el-button>
                             <el-button @click="setImage()">拍照</el-button>
                         </div>
@@ -401,6 +411,16 @@ export default {
             limit: 20,
             count: 0,
             tableData: [],
+            videoWidth: 550,
+            videoHeight: 550,
+            imgSrc: "",
+            thisCancas: null,
+            thisContext: null,
+            thisVideo: null,
+            openVideo:false,
+            img:[],
+            webSocketObject: null,
+            dataJason:[],
             pickerOptions0: {
                 disabledDate(time) {
                     return time.getTime() < Date.now() - 8.64e7;//如果没有后面的-8.64e7就是不可以选择今天的
@@ -412,6 +432,18 @@ export default {
                 }
             },
 
+            list:[
+                {audio:"/static/audio/all.wav"},
+                {audio:"/static/audio/look_left_1.wav"},
+                {audio:"/static/audio/look_right_1.wav"},
+                {audio:"/static/audio/blink_1.wav"},
+                {audio:"/static/audio/bow_head_1.wav"},
+                {audio:"/static/audio/open_mouth_1.wav"},
+                {audio:"/static/audio/rise_head_1.wav"},
+                {audio:"/static/audio/smile_1.wav"},
+                {audio:"/static/audio/end_capturing_1.wav"},
+
+            ],
             tableData2: [],
             currentPage: 1,
             selectTable: {},
@@ -422,24 +454,11 @@ export default {
             dialogFormVisible2: false,
             dialogFormVisible3:false,
             dialogFormVisible4:false,
+            audioplay:"",
             categoryOptions: [],
             selectedCategory: [],
             address: {},
             radio: '1',
-            start:1,
-            end:1,
-            interval:3,
-            countTimes:1,
-            imgSrc:"",
-            thumbnails:[
-                1,
-                2,
-                3,
-                4,
-                5,
-                6
-            ]
-            // flvPlayer:null
         }
     },
     created(){
@@ -453,7 +472,7 @@ export default {
     methods: {
         //连接websocket
         webSocketInit(){
-            const webSocketUrl = 'ws://39.105.102.68:8000/ws/chat/'
+            const webSocketUrl = 'ws://39.105.102.68:8000/ws/face_reg/'
             this.webSocketObject = new WebSocket(webSocketUrl);
             this.webSocketObject.onopen = this.webSocketOnOpen
             this.webSocketObject.onmessage = this.webSocketOnMessage
@@ -492,15 +511,6 @@ export default {
             _this.thisContext = this.thisCancas.getContext("2d");
             _this.thisVideo = document.getElementById("videoCamera");
             _this.thisVideo.style.display = 'block';
-            // _this.start= _this.thisVideo.currentTime;
-            _this.thisVideo.addEventListener('canplay',this.canplayHandler);
-            // const end = _this.thisVideo.buffered.end(0);  // 视频结尾时间
-            const current =  _this.thisVideo.currentTime;  //  视频当前时间
-            // const diff = end - current;// 相差时间
-            // console.log(diff);
-
-
-            // _this.end=_this.thisVideo.endTime;
             // 获取媒体属性，旧版本浏览器可能不支持mediaDevices，我们首先设置一个空对象
             if (navigator.mediaDevices === undefined) {
                 navigator.mediaDevices = {};
@@ -553,26 +563,41 @@ export default {
                 .catch(err => {
                     console.log(err);
                 });
-            // _this.thumbnails.forEach(item=>{
-            //     _this.setImage()
-            //     console.log(333)
-            // })
-            // let diffCritical = 4; // 这里设定了超过4秒以上就进行跳转
-            // let diffSpeedUp = 1; // 这里设置了超过1秒以上则进行视频加速播放
-            // if(diffCritical<diffSpeedUp){
-            //     diffSpeedUp=diffSpeedUp+1;
-            //     console.log(111111111111111111111)
-            // }else{
-            //     _this.setImage();
-            //     diffCritical=diffCritical+4;
-            //     console.log(2222222222222222222222222222)
-            // }
+            this.aplayAudio()
+            var startTime = new Date().getTime();
+            this.timer=setInterval(()=>{
+                _this.setImage()
+                console.log(9999)
+                // this.aplayAudio()
+                if(new Date().getTime() - startTime > 10000){
+                    clearInterval( this.timer);
+                    console.log(7778220138)
+                    var message={
+                        base64:_this.img.reverse(),
+                        pid:this.selectTable4.id,
+                        uid:2,
+                        type:"old_people"
+                    }
+                    console.log(JSON.stringify(message))
+                    this.websocketsend(JSON.stringify(message));
 
+                }
+                //获取50张图片
+            },500)
+        },
+        // 语音播放
+        aplayAudio () {
+            var _this=this
+            console.log("语音提示------------------------------------")
+            var audios = document.getElementsByTagName("audio");
+            console.log(audios)
 
-
+            const audio = document.getElementById('audio')
+            _this.audioplay=audio
+            _this.audioplay.play()
         },
         //  绘制图片（拍照功能）
-        setImage() {
+        async setImage() {
             var _this = this;
             // canvas画图
             _this.thisContext.drawImage(
@@ -582,27 +607,23 @@ export default {
                 _this.videoWidth,
                 _this.videoHeight
             );
+            _this.thisContext.strokeStyle = 'red';
+            _this.thisContext.strokeRect(150, 150, 260, 250);
             // 获取图片base64链接
-            const image = this.thisCancas.toDataURL("image/png");
+            var image = this.thisCancas.toDataURL("image/png");
             _this.imgSrc = image;//赋值并预览图片
-            // _this.thumbnails.push({
-            //     currentTime:_this.start,
-            //     blob: _this.imgSrc
-            // });
             console.log(_this.imgSrc)
-            // console.log(_this.thumbnails)
-            this.websocketsend(JSON.stringify({'message':_this.imgSrc}));
-            // //这里可以把转换的URL存到数
-            // 组里面
-            // _this.img.push(_this.imgSrc);
-            // _this.img.reverse();//将数组倒序
+            _this.img.push(_this.imgSrc);
+
+            console.log(88888888)
 
 
-            // _this.setImage()
         },
         // 关闭摄像头
         stopNavigator() {
             this.thisVideo.srcObject.getTracks()[0].stop();
+            this.dialogFormVisible4 = false
+            this.audioplay.pause()
         },
         // base64转文件，此处没用到
         dataURLtoFile(dataurl, filename) {
@@ -663,6 +684,12 @@ export default {
                 })
                 const countData=i;
                this.count=countData;
+               var _this=this
+               if(_this.tableData.gender=="男"){
+                   _this.radio='1';
+               }else{
+                   _this.radio='2'
+               }
                 console.log(response);
                 console.log(response.data)
                 console.log(response.data[0])
@@ -826,7 +853,8 @@ export default {
     width: 50%;
 }
 .table_container{
-    padding: 20px;
+    padding-left: 20px;
+    padding-top: 10px;
 }
 .Pagination{
     display: flex;
@@ -855,5 +883,11 @@ export default {
     width: 120px;
     height: 120px;
     display: block;
+}
+.button{
+    position: relative;
+    padding-left: 20px;
+    padding-top: 10px;
+
 }
 </style>

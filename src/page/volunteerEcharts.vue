@@ -11,8 +11,13 @@ import axios from "axios";
 export default {
     // name: "app",
     data(){
-        old:[]
+        return{
+            volunteery:[],
+        }
+
+
     },
+
 
     methods: {
         drawChart() {
@@ -21,7 +26,7 @@ export default {
                 }
             }).then(response=> {
                 console.log(window.localStorage.getItem('jwToken'))
-                this.old=response.data
+                this.volunteery=response.data
             }).catch(function (error) {
                 console.log('获取数据失败', err);
             })
@@ -34,19 +39,19 @@ export default {
                 title: {
                     text: "义工年龄分布"
                 },
-                tooltip: {},
+                tooltip: {data:"人数"},
                 legend: {
                     data: ["岁"]
                 },
                 xAxis: {
-                    data: ["60", "70", "80", "80以上"]
+                    data: ["18-25", "25-35", "35-45", "45以上"]
                 },
                 yAxis: {},
                 series: [
                     {
                         name: "销量",
                         type: "bar",
-                        data:this.old,
+                        data:this.volunteery,
                         // [5, 20, 36, 10]
                     }
                 ]
@@ -59,14 +64,25 @@ export default {
         },
         //获取数据
         getolddata(){
-
+            axios.get('http://39.105.102.68:8000/oldcare/volunteer/statistics/', {headers: {
+                    'Authorization':'Bearer '+window.localStorage.getItem('jwToken')
+                }
+            }).then(response=> {
+                console.log(window.localStorage.getItem('jwToken'))
+                this.volunteery=response.data
+                this.drawChart()
+                console.log(3333333333333333333333333333333333333333)
+                console.log(this.volunteery)
+            }).catch(function (error) {
+                console.log('获取数据失败', err);
+            })
         }
 
 
 
     },
     mounted() {
-        this.drawChart();
+        this.getolddata()
     },
     components: {
         headTop,

@@ -5,14 +5,14 @@
 			<header class="section_title">数据统计</header>
 			<el-row :gutter="20" style="margin-bottom: 10px;">
                 <el-col :span="4"><div class="data_list today_head"><span class="data_num head">当日数据：</span></div></el-col>
-				<el-col :span="4"><div class="data_list"><span class="data_num">{{userCount}}</span> 新增用户</div></el-col>
-				<el-col :span="4"><div class="data_list"><span class="data_num">{{orderCount}}</span> 新增订单</div></el-col>
+				<el-col :span="4"><div class="data_list"><span class="data_num">{{userCount}}</span> 老人年龄分布</div></el-col>
+<!--				<el-col :span="4"><div class="data_list"><span class="data_num">{{orderCount}}</span> 新增订单</div></el-col>-->
                 <el-col :span="4"><div class="data_list"><span class="data_num">{{adminCount}}</span> 新增管理员</div></el-col>
 			</el-row>
             <el-row :gutter="20">
                 <el-col :span="4"><div class="data_list all_head"><span class="data_num head">总数据：</span></div></el-col>
-                <el-col :span="4"><div class="data_list"><span class="data_num">{{allUserCount}}</span> 注册用户</div></el-col>
-                <el-col :span="4"><div class="data_list"><span class="data_num">{{allOrderCount}}</span> 订单</div></el-col>
+<!--                <el-col :span="4"><div class="data_list"><span class="data_num">{{allUserCount}}</span> 注册用户</div></el-col>-->
+<!--                <el-col :span="4"><div class="data_list"><span class="data_num">{{allOrderCount}}</span> 订单</div></el-col>-->
                 <el-col :span="4"><div class="data_list"><span class="data_num">{{allAdminCount}}</span> 管理员</div></el-col>
             </el-row>
 		</section>
@@ -22,18 +22,18 @@
 
 <script>
 	import headTop from '../components/headTop'
-	import tendency from '../components/tendency' 
+	import tendency from '../components/tendency'
 	import dtime from 'time-formater'
 	import {userCount, orderCount, getUserCount, getOrderCount, adminDayCount, adminCount} from '@/api/getData'
     export default {
     	data(){
     		return {
-    			userCount: null,
-    			orderCount: null,
-                adminCount: null,
-                allUserCount: null,
-                allOrderCount: null,
-                allAdminCount: null,
+    			userCount: 10,
+    			orderCount: 20,
+                adminCount: 30,
+                allUserCount: 20,
+                allOrderCount: 10,
+                allAdminCount: 7,
     			sevenDay: [],
     			sevenDate: [[],[],[]],
     		}
@@ -56,17 +56,6 @@
     	methods: {
     		async initData(){
     			const today = dtime().format('YYYY-MM-DD')
-    			Promise.all([userCount(today), orderCount(today), adminDayCount(today), getUserCount(), getOrderCount(), adminCount()])
-    			.then(res => {
-    				this.userCount = res[0].count;
-    				this.orderCount = res[1].count;
-                    this.adminCount = res[2].count;
-                    this.allUserCount = res[3].count;
-                    this.allOrderCount = res[4].count;
-                    this.allAdminCount = res[5].count;
-    			}).catch(err => {
-    				console.log(err)
-    			})
     		},
     		async getSevenData(){
     			const apiArr = [[],[],[]];
@@ -80,7 +69,7 @@
     				const resArr = [[],[],[]];
 					res.forEach((item, index) => {
 						if (item.status == 1) {
-							resArr[Math.floor(index/7)].push(item.count)
+							resArr[Math.floor(index/5)].push(item.count)
 						}
 					})
 					this.sevenDate = resArr;
